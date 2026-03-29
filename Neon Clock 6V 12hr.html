@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+/* THEMES */
+:root[data-theme="sakura"] {
+    --core: #d6b3ff;
+    --inner: #c594ff;
+    --mid: #b37aff;
+    --outer: #8f5aff;
+    --bg: #191919;
+}
+
+:root[data-theme="springtrap"] {
+    --core: #7aff00;
+    --inner: #5fb300;
+    --mid: #3f8f00;
+    --outer: #1f5a00;
+    --bg: #050505;
+}
+
+/* BASE */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    font-family: Arial, sans-serif;
+    color: var(--core);
+    transition: background 0.4s ease;
+}
+
+.clock-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.time {
+    font-size: 80px;
+    font-weight: bold;
+    color: var(--core);
+    text-shadow:
+        0 0 10px var(--inner),
+        0 0 16px var(--mid),
+        0 0 22px var(--outer);
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.date {
+    margin-top: 10px;
+    font-size: 24px;
+    opacity: 0.85;
+    color: var(--inner);
+}
+
+/* VHS STATIC BAR */
+.vcr-bar {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 22px;
+    background: linear-gradient(
+        to bottom,
+        rgba(122,255,0,0.45),
+        rgba(122,255,0,0.15)
+    );
+    opacity: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(0.8px);
+    z-index: 999;
+}
+
+/* SCANLINE */
+.scanline {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(122,255,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 998;
+}
+</style>
+</head>
+
+<body>
+
+<button id="switcher" style="
+    position:absolute; top:20px; right:20px;
+    padding:8px 14px; background:transparent;
+    border:2px solid var(--core); color:var(--core);
+    border-radius:8px; cursor:pointer; font-size:14px;
+    text-shadow:0 0 8px var(--inner); transition:0.3s ease;
+">Switch Theme</button>
+
+<div class="clock-container">
+    <div class="time" id="time"></div>
+    <div class="date" id="date"></div>
+</div>
+
+<div id="vcr-container"></div>
+<div class="scanline" id="scanline"></div>
+
+<script>
+let mode = "sakura";
+document.documentElement.setAttribute("data-theme", mode);
+
+const timeEl = document.getElementById("time");
+const vcrContainer = document.getElementById("vcr-container");
+const scanline = document.getElementById("scanline");
+
+/* RESET */
+function resetToResting() {
+    timeEl.style.transition = "all 0.2s ease";
+    timeEl.style.transform = "scale(1)";
+    timeEl.style.filter = "brightness(1) blur(0px)";
+    timeEl.style.opacity = 1;
+    timeEl.style.color = "var(--core)";
+    timeEl.style.textShadow =
+        `0 0 10px var(--inner),
+         0 0 16px var(--mid),
+         0 0 22px var(--outer)`;
+}
+
+/* 🌸 SAKURA MINUTE BLINK */
+function sakuraBlink() {
+    const el = timeEl;
+
+    el.style.transition = "all 0.25s ease";
+    el.style.textShadow =
+        "0 0 25px #d6b3ff, 0 0 50px #c59aff, 0 0 70px #b37aff, 0 0 90px #8f5aff";
+    el.style.transform = "scale(1.08)";
+    el.style.filter = "blur(0.6px)";
+
+    setTimeout(() => {
+        el.style.transition = "all 0.4s ease";
+        el.style.textShadow =
+            "0 0 18px #c59aff, 0 0 35px #b37aff, 0 0 50px #8f5aff";
+        el.style.transform = "scale(1.02)";
+        el.style.filter = "blur(0.3px)";
+    }, 250);
+
+    setTimeout(() => {
+        el.style.transition = "none";
+        el.style.opacity = "0.5";
+        setTimeout(() => el.style.opacity = "1", 70);
+        setTimeout(() => el.style.opacity = "0.7", 140);
+        setTimeout(() => el.style.opacity = "1", 210);
+    }, 1250);
+
+    setTimeout(() => resetToResting(), 1500);
+}
+
+/* THEME SWITCH */
+function toggleTheme() {
+    mode = mode === "sakura" ? "springtrap" : "sakura";
+    document.documentElement.setAttribute("data-theme", mode);
+    resetToResting();
+
+    if (mode === "springtrap") {
+        setTimeout(() => breathingEngine(), rand(6000, 10000));
+    }
+}
+document.getElementById("switcher").onclick = toggleTheme;
+
+/* CLOCK */
+let lastMinute = null;
+
+function updateClock() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+    const h = String(hours).padStart(2, '0');
+
+    const text = `${h}:${minutes} ${ampm}`;
+    timeEl.textContent = text;
+
+    if (minutes !== lastMinute) {
+        if (mode === "sakura") sakuraBlink();
+        else neonPulse();
+        lastMinute = minutes;
+    }
+
+    const opts = { weekday:'short', year:'numeric', month:'short', day:'numeric' };
+    document.getElementById('date').textContent = now.toLocaleDateString(undefined, opts);
+}
+
+/* MINUTE BLINK (SPRINGTRAP) */
+function neonPulse() {
+    timeEl.style.transition = "all 0.25s ease";
+    timeEl.style.textShadow =
+        `0 0 16px var(--core),
+         0 0 24px var(--inner),
+         0 0 32px var(--mid)`;
+    timeEl.style.transform = "scale(1.05)";
+    timeEl.style.filter = "blur(0.4px)";
+
+    setTimeout(() => resetToResting(), 1500);
+}
+
+/* BREATHING (Option B) */
+function breathingSurge(text) {
+    if (mode !== "springtrap") return;
+
+    let step = 0;
+
+    const breaths = [
+        { scale: 1.05, glow: 12, blur: 0.15, bright: 1.05, dur: rand(1500,2000) },
+        { scale: 1.00, glow: 10, blur: 0.05, bright: 1.00, dur: rand(1200,1800) },
+        { scale: 1.07, glow: 14, blur: 0.2, bright: 1.07, dur: rand(1600,2200) },
+        { scale: 1.01, glow: 11, blur: 0.1, bright: 1.02, dur: rand(1300,1900) },
+        { scale: 1.10, glow: 16, blur: 0.25, bright: 1.10, dur: rand(1800,2400) }
+    ];
+
+    function doStep() {
+        if (mode !== "springtrap") return resetToResting();
+
+        if (step >= breaths.length) {
+            redFlash(text);
+            return;
+        }
+
+        const b = breaths[step];
+        timeEl.style.transition = `all ${b.dur}ms ease-in-out`;
+        timeEl.style.transform = `scale(${b.scale})`;
+        timeEl.style.filter = `blur(${b.blur}px) brightness(${b.bright})`;
+        timeEl.style.textShadow =
+            `0 0 ${b.glow}px var(--core),
+             0 0 ${b.glow * 1.2}px var(--inner)`;
+
+        setTimeout(() => {
+            step++;
+            doStep();
+        }, b.dur);
+    }
+
+    doStep();
+}
+
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+/* RED FLASH */
+function redFlash(text) {
+    if (mode !== "springtrap") return resetToResting();
+
+    timeEl.style.transition = "all 0.15s ease";
+    timeEl.style.color = "#a00000";
+    timeEl.style.textShadow =
+        `0 0 14px #a00000,
+         0 0 22px #600000`;
+    timeEl.style.filter = "brightness(0.9)";
+
+    setTimeout(() => snapBack(text), 150);
+}
+
+/* SNAP BACK */
+function snapBack(text) {
+    if (mode !== "springtrap") return resetToResting();
+
+    timeEl.style.transition = "all 0.12s ease-out";
+    timeEl.style.color = "var(--core)";
+    timeEl.style.transform = "scale(1)";
+    timeEl.style.filter = "brightness(1) blur(0px)";
+    timeEl.style.textShadow =
+        `0 0 10px var(--inner),
+         0 0 16px var(--mid),
+         0 0 22px var(--outer)`;
+
+    timeEl.textContent = text;
+
+    setTimeout(() => dimPhase(), 150);
+}
+
+/* DIM */
+function dimPhase() {
+    if (mode !== "springtrap") return resetToResting();
+
+    timeEl.style.opacity = 0.35;
+    timeEl.style.filter = "brightness(0.8)";
+    setTimeout(() => recoveryBlink(), 200);
+}
+
+/* RECOVERY */
+function recoveryBlink() {
+    if (mode !== "springtrap") return resetToResting();
+
+    timeEl.style.opacity = 1;
+    setTimeout(() => {
+        timeEl.style.opacity = 0.5;
+        setTimeout(() => resetToResting(), 150);
+    }, 150);
+}
+
+/* VHS STATIC */
+function vcrStatic() {
+    if (mode !== "springtrap") return;
+
+    const count = rand(1, 6);
+
+    for (let i = 0; i < count; i++) {
+        const bar = document.createElement("div");
+        bar.className = "vcr-bar";
+
+        const y = Math.random() * window.innerHeight * 0.7;
+        const jitter = (Math.random() * 6 - 3);
+        const delay = rand(0, 300);
+
+        setTimeout(() => {
+            bar.style.top = y + "px";
+            bar.style.transform = `translateX(${jitter}px)`;
+            bar.style.opacity = "1";
+            bar.style.transition = "opacity 0.2s ease";
+
+            setTimeout(() => {
+                bar.style.transition = "opacity 0.8s ease";
+                bar.style.opacity = "0";
+                setTimeout(() => bar.remove(), 900);
+            }, 200);
+
+        }, delay);
+
+        vcrContainer.appendChild(bar);
+    }
+}
+
+/* SCANLINE */
+function scanlineSweep() {
+    if (mode !== "springtrap") return;
+
+    scanline.style.opacity = 1;
+    scanline.style.top = "0px";
+    scanline.style.transition = "top 0.45s linear";
+    scanline.style.top = window.innerHeight + "px";
+
+    setTimeout(() => {
+        scanline.style.opacity = 0;
+        scanline.style.transition = "none";
+    }, 460);
+}
+
+/* FLICKER */
+function fadeFlicker() {
+    if (mode !== "springtrap") return;
+    timeEl.style.opacity = 0.3;
+    setTimeout(() => timeEl.style.opacity = 1, 120);
+    setTimeout(fadeFlicker, 3000 + Math.random() * 2000);
+}
+
+/* ⭐ IRREGULAR BREATHING ENGINE */
+function breathingEngine() {
+    if (mode !== "springtrap") {
+        setTimeout(breathingEngine, 4000);
+        return;
+    }
+
+    const roll = Math.random() * 100;
+    const text = timeEl.textContent;
+
+    if (roll < 5) {
+        breathingSurge(text);
+        setTimeout(() => breathingSurge(text), rand(2000, 3500));
+    }
+    else if (roll < 20) {
+        breathingSurge(text);
+    }
+
+    setTimeout(breathingEngine, rand(4000, 6000));
+}
+
+/* STATIC LOOP */
+function staticCycle() {
+    if (mode === "springtrap") vcrStatic();
+    setTimeout(staticCycle, 4000 + Math.random() * 3000);
+}
+
+/* SCANLINE LOOP */
+function scanlineCycle() {
+    if (mode === "springtrap") scanlineSweep();
+    setTimeout(scanlineCycle, 7000 + Math.random() * 4000);
+}
+
+/* START LOOPS */
+setTimeout(staticCycle, 3000);
+setTimeout(scanlineCycle, 3500);
+setTimeout(fadeFlicker, 4000);
+setTimeout(breathingEngine, 6000);
+
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
