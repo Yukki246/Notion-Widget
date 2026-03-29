@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neon Weather - Perth</title>
+
+  <style>
+    :root {
+      --neon-core: #D6B3FF;
+      --neon-inner: #C59AFF;
+      --neon-mid: #B37AFF;
+      --neon-outer: #8F5AFF;
+      --neon-haze: rgba(147, 94, 255, 0.35);
+    }
+
+    body {
+      background: #191919; /* Notion dark mode */
+      margin: 0;
+      height: 260px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Segoe UI", sans-serif;
+      color: var(--neon-core);
+      position: relative;
+    }
+
+    .weather-box {
+      text-align: center;
+      animation:
+        pulse 2.6s ease-in-out infinite,
+        flicker 9s infinite;
+    }
+
+    .temp {
+      font-size: 3.4rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-shadow:
+        0 0 10px var(--neon-core),
+        0 0 22px var(--neon-inner),
+        0 0 38px var(--neon-mid),
+        0 0 70px var(--neon-outer),
+        0 0 110px var(--neon-haze);
+    }
+
+    .condition {
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+      opacity: 0.9;
+    }
+
+    .details {
+      font-size: 0.95rem;
+      opacity: 0.8;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.92; }
+      40% { opacity: 1; }
+      70% { opacity: 0.96; }
+      100% { opacity: 0.92; }
+    }
+
+    @keyframes flicker {
+      0%, 92%, 100% { opacity: 1; }
+      93% { opacity: 0.55; }
+      94% { opacity: 0.85; }
+      95% { opacity: 0.40; }
+      96% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="weather-box">
+    <div id="icon"></div>
+    <div class="temp" id="temp">--°C</div>
+    <div class="condition" id="condition">Loading...</div>
+    <div class="details" id="details"></div>
+  </div>
+
+  <script>
+    const API_KEY = "5408e9217e0a49dcbf365907262903"; // Your WeatherAPI key
+    const CITY = "Perth";
+
+    async function loadWeather() {
+      const url =
+        `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${CITY}&aqi=no`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.error) {
+          document.getElementById("condition").textContent = "Error loading weather";
+          return;
+        }
+
+        const temp = Math.round(data.current.temp_c);
+        const feels = Math.round(data.current.feelslike_c);
+        const condition = data.current.condition.text;
+        const iconUrl = "https:" + data.current.condition.icon;
+
+        document.getElementById("temp").textContent = `${temp}°C`;
+        document.getElementById("condition").textContent = condition;
+
+        document.getElementById("details").textContent =
+          `Feels like ${feels}°C • Wind: ${data.current.wind_kph} km/h`;
+
+        document.getElementById("icon").innerHTML =
+          `<img src="${iconUrl}" style="width: 70px; filter: drop-shadow(0 0 12px var(--neon-core));">`;
+
+      } catch (err) {
+        document.getElementById("condition").textContent = "Error loading weather";
+      }
+    }
+
+    loadWeather();
+  </script>
+</body>
+</html>

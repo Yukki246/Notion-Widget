@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Academic Header</title>
+
+  <style>
+    :root {
+      --neon-core: #D6B3FF;
+      --neon-inner: #C59AFF;
+      --neon-mid: #B37AFF;
+      --neon-outer: #8F5AFF;
+      --neon-haze: rgba(147, 94, 255, 0.35);
+    }
+
+    body {
+      background: #191919; /* Notion dark mode background */
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .header {
+      font-size: 3.6rem;
+      font-weight: 700; /* thicker like the clock */
+      letter-spacing: 0.05em;
+      text-transform: none; /* normal capitalization */
+      color: var(--neon-core);
+
+      /* Neon glow stack (clock-matched) */
+      text-shadow:
+        0 0 10px var(--neon-core),
+        0 0 22px var(--neon-inner),
+        0 0 38px var(--neon-mid),
+        0 0 70px var(--neon-outer),
+        0 0 110px var(--neon-haze);
+
+      /* Pulse + flicker */
+      animation:
+        pulse 2.6s ease-in-out infinite,
+        flicker 9s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.92; }
+      40% { opacity: 1; }
+      70% { opacity: 0.96; }
+      100% { opacity: 0.92; }
+    }
+
+    @keyframes flicker {
+      0%, 92%, 100% { opacity: 1; }
+      93% { opacity: 0.55; }
+      94% { opacity: 0.85; }
+      95% { opacity: 0.40; }
+      96% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">Personal Systems</div>
+</body>
+</html>
