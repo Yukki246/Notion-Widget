@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #191919; /* Notion dark mode */
+        font-family: Arial, sans-serif;
+        color: #c59aff;
+    }
+
+    .clock-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .time {
+        font-size: 80px;
+        font-weight: bold;
+        color: #c59aff;
+        text-shadow:
+            0 0 10px #b37aff,
+            0 0 20px #8f5aff,
+            0 0 30px #8f5aff;
+        transition: all 0.25s ease;
+    }
+
+    .date {
+        margin-top: 10px;
+        font-size: 24px;
+        opacity: 0.85;
+        color: #d8c7ff;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="clock-container">
+    <div class="time" id="time"></div>
+    <div class="date" id="date"></div>
+</div>
+
+<script>
+let lastMinute = null;
+
+function updateClock() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    // 12-hour conversion
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 -> 12
+    const h = String(hours).padStart(2, '0');
+
+    const timeEl = document.getElementById('time');
+    timeEl.textContent = `${h}:${minutes} ${ampm}`;
+
+    if (minutes !== lastMinute) {
+        triggerAnimation(timeEl);
+        lastMinute = minutes;
+    }
+
+    const opts = { weekday:'short', year:'numeric', month:'short', day:'numeric' };
+    document.getElementById('date').textContent = now.toLocaleDateString(undefined, opts);
+}
+
+function triggerAnimation(el) {
+    // Step 1: Neon Pulse
+    el.style.transition = "all 0.25s ease";
+    el.style.textShadow =
+        "0 0 25px #d6b3ff, 0 0 50px #c59aff, 0 0 70px #b37aff, 0 0 90px #8f5aff";
+    el.style.transform = "scale(1.08)";
+    el.style.filter = "blur(0.6px)";
+
+    // Step 2: Linger
+    setTimeout(() => {
+        el.style.transition = "all 0.4s ease";
+        el.style.textShadow =
+            "0 0 18px #c59aff, 0 0 35px #b37aff, 0 0 50px #8f5aff";
+        el.style.transform = "scale(1.02)";
+        el.style.filter = "blur(0.3px)";
+    }, 250);
+
+    // Step 3: Flicker
+    setTimeout(() => {
+        el.style.transition = "none";
+        el.style.opacity = "0.5";
+        setTimeout(() => el.style.opacity = "1", 70);
+        setTimeout(() => el.style.opacity = "0.7", 140);
+        setTimeout(() => el.style.opacity = "1", 210);
+    }, 1250);
+
+    // Step 4: Reset
+    setTimeout(() => {
+        el.style.transition = "all 0.3s ease";
+        el.style.textShadow =
+            "0 0 10px #b37aff, 0 0 20px #8f5aff, 0 0 30px #8f5aff";
+        el.style.transform = "scale(1)";
+        el.style.filter = "blur(0px)";
+        el.style.opacity = "1";
+    }, 1500);
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
