@@ -24,22 +24,24 @@
     .nav-container {
         display: flex;
         flex-direction: column;
-        align-items: center; /* CENTERED */
+        align-items: center;
         gap: 18px;
         padding: 24px 18px;
-        width: 220px; /* prevents glow clipping */
+        width: 220px;
         margin: 0 auto;
     }
 
     .nav-item {
+        width: 100%;              /* all buttons same width */
+        text-align: center;       /* center text */
         font-size: 1.15rem;
         font-weight: 600;
         text-decoration: none;
         color: var(--neon-core);
-        padding: 10px 14px;
+        padding: 12px 0;
         border-radius: 6px;
 
-        /* Neon glow stack */
+        /* Neon glow */
         text-shadow:
             0 0 10px var(--neon-core),
             0 0 22px var(--neon-inner),
@@ -52,7 +54,6 @@
 
         transition: 0.25s ease;
 
-        /* Pulse + flicker */
         animation:
             pulse 2.6s ease-in-out infinite,
             flicker 9s infinite;
@@ -88,29 +89,10 @@
 
 <div class="nav-container">
 
-    <a class="nav-item" 
-       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f#332a6f74da51804282b1e8d79aa42669"
-       target="_parent">
-       Academic
-    </a>
-
-    <a class="nav-item" 
-       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f#332a6f74da51807c8769e4cf40f5cd13"
-       target="_parent">
-       Planning
-    </a>
-
-    <a class="nav-item" 
-       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f#332a6f74da5180e7bdd7d13b2b73da44"
-       target="_parent">
-       Personal Systems
-    </a>
-
-    <a class="nav-item" 
-       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f#332a6f74da5180feab7ac587016ab57f"
-       target="_parent">
-       Hubs
-    </a>
+    <a class="nav-item" href="REPLACE_WITH_CORRECT_URL#blockID" target="_parent">Academic</a>
+    <a class="nav-item" href="REPLACE_WITH_CORRECT_URL#blockID" target="_parent">Planning</a>
+    <a class="nav-item" href="REPLACE_WITH_CORRECT_URL#blockID" target="_parent">Personal Systems</a>
+    <a class="nav-item" href="REPLACE_WITH_CORRECT_URL#blockID" target="_parent">Hubs</a>
 
 </div>
 
