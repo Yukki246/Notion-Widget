@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Neon Vertical Navigation</title>
+
+<style>
+    :root {
+      --neon-core: #D6B3FF;
+      --neon-inner: #C59AFF;
+      --neon-mid: #B37AFF;
+      --neon-outer: #8F5AFF;
+      --neon-haze: rgba(147, 94, 255, 0.35);
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #191919; /* Notion dark mode */
+        font-family: "Segoe UI", sans-serif;
+        overflow: hidden;
+    }
+
+    .nav-container {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 24px 18px;
+        width: 200px;
+        position: relative;
+    }
+
+    .nav-item {
+        font-size: 1.15rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: var(--neon-core);
+        padding: 10px 14px;
+        border-radius: 6px;
+
+        /* Neon glow stack */
+        text-shadow:
+            0 0 10px var(--neon-core),
+            0 0 22px var(--neon-inner),
+            0 0 38px var(--neon-mid),
+            0 0 70px var(--neon-outer),
+            0 0 110px var(--neon-haze);
+
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(214, 179, 255, 0.18);
+
+        transition: 0.25s ease;
+
+        /* Pulse + flicker */
+        animation:
+            pulse 2.6s ease-in-out infinite,
+            flicker 9s infinite;
+    }
+
+    .nav-item:hover {
+        background: rgba(214, 179, 255, 0.12);
+        box-shadow:
+            0 0 12px var(--neon-core),
+            0 0 26px var(--neon-inner),
+            0 0 40px var(--neon-mid);
+        color: white;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.92; }
+      40% { opacity: 1; }
+      70% { opacity: 0.96; }
+      100% { opacity: 0.92; }
+    }
+
+    @keyframes flicker {
+      0%, 92%, 100% { opacity: 1; }
+      93% { opacity: 0.55; }
+      94% { opacity: 0.85; }
+      95% { opacity: 0.40; }
+      96% { opacity: 1; }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="nav-container">
+
+    <a class="nav-item" 
+       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f?source=copy_link#332a6f74da51804282b1e8d79aa42669"
+       target="_parent">
+       Academic
+    </a>
+
+    <a class="nav-item" 
+       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f?source=copy_link#332a6f74da51807c8769e4cf40f5cd13"
+       target="_parent">
+       Planning
+    </a>
+
+    <a class="nav-item" 
+       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f?source=copy_link#332a6f74da5180e7bdd7d13b2b73da44"
+       target="_parent">
+       Personal Systems
+    </a>
+
+    <a class="nav-item" 
+       href="https://www.notion.so/My-University-Notion-31ba6f74da5180c89346c2a62c24211f?source=copy_link#332a6f74da5180feab7ac587016ab57f"
+       target="_parent">
+       Hubs
+    </a>
+
+</div>
+
+</body>
+</html>
